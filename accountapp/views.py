@@ -1,6 +1,6 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render
 
 
@@ -32,7 +32,7 @@ def hello_world(request):
 class AccountCreateView(CreateView):
     model = User
     form_class = UserCreationForm
-    success_url = reverse_lazy('acccountapp:hello_world')
+    success_url = reverse_lazy('accountapp:hello_world')
     template_name = 'accountapp/create.html'
 
 class AccountDetailView(DetailView):
@@ -48,16 +48,16 @@ class AccountUpdateView(UpdateView):
     template_name = 'accountapp/update.html'
 
     def get(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
+        if request.user.is_authenticated and self.get_object() == request.user:
             return super().get(request, *args, **kwargs)
         else:
-            return HttpResponseRedirect(reverse('accountapp:login'))
+            return HttpResponseForbidden()
 
     def post(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             return super().post(request, *args, **kwargs)
         else:
-            return HttpResponseRedirect(reverse('accountapp:login'))
+            return HttpResponseForbidden()
 
 class AccountDeleteView(DeleteView):
     model = User
