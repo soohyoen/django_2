@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 # Create your views here.
@@ -10,6 +11,8 @@ from profileapp.forms import ProfileCreationForm
 from profileapp.models import Profile
 
 
+@method_decorator(login_required, 'get')
+@method_decorator(login_required, 'post')
 class ProfileCreateView(CreateView):
     model = Profile
     context_object_name= 'target_profile'
